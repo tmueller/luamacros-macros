@@ -10,6 +10,39 @@ lmc_set_handler('NUM', function(button, direction)
     print("button: " .. button .. " direction: " .. direction)
 
     -- MEDIA ------------------------------------------------------------------
+    media_controls(button, direction)
+
+    -- DEBUG ------------------------------------------------------------------
+    title=lmc_get_window_title()
+    print(title)
+
+    if (string.match(title, "Chrome")) then
+        debug_chrome(button, direction)
+    elseif (string.match(title, "Visual Studio Code")) then
+        debug_vscode(button, direction)
+    end
+
+    -- Windows ----------------------------------------------------------------
+    windows_keys(button, direction)
+end)
+
+windows_keys = function (button, direction)
+    if (direction == 1) then
+        return
+    end
+
+    if (button == 221) then
+        print("Desktop Right")
+        lmc_send_keys("^#{RIGHT}");
+    end
+
+    if (button == 9) then
+        print("Desktop Left")
+        lmc_send_keys("^#{LEFT}");
+    end
+end
+
+media_controls = function (button, direction)
     if (direction == 1) then
         if (button == 8) then
             print("Volume +")
@@ -55,19 +88,13 @@ lmc_set_handler('NUM', function(button, direction)
         lmc_send_input(0xB0, 0, 0) -- Next Track
         lmc_send_input(0xB0, 0, 2) -- Next Track
     end
+end
 
-    -- DEBUG ------------------------------------------------------------------
-    title=lmc_get_window_title()
-    print(title)
-
-    if (string.match(title, "Chrome")) then
-        debug_chrome(button)
-    elseif (string.match(title, "Visual Studio Code")) then
-        debug_vscode(button)
+debug_chrome = function (button, direction)
+    if (direction == 1) then
+        return
     end
-end)
 
-debug_chrome = function (button)
     -- Continue
     if (button == 100) then
         print("Continue")
@@ -93,7 +120,11 @@ debug_chrome = function (button)
     end
 end
 
-debug_vscode = function (button)
+debug_vscode = function (button, direction)
+    if (direction == 1) then
+        return
+    end
+
     -- Continue
     if (button == 100) then
         print("Continue")
