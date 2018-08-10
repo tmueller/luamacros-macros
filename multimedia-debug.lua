@@ -42,43 +42,24 @@ windows_keys = function (button, direction)
     end
 end
 
+media_map = {};
+media_map[8] = 0xAF     -- backspace    => Volume +
+media_map[106] = 0xAE   -- *            => Volume -
+media_map[111] = 0xAD   -- /            => Mute
+media_map[104] = 0xB1   -- 8            => Prev Track
+media_map[105] = 0xB3   -- 9            => Play / Pause
+media_map[103] = 0xB2   -- 7            => Stop
+media_map[109] = 0xB0   -- -            => Next Track
+
 media_controls = function (button, direction)
-    dir = input_direction(direction);
+    dir = input_direction(direction)
+    mapped_input = media_map[button]
 
-    if (button == 8) then
-        print("Volume +")
-        lmc_send_input(0xAF, 0, dir) -- Volume +
+    if (not mapped_input) then
+        return
     end
 
-    if (button == 106) then
-        print("Volume -")
-        lmc_send_input(0xAE, 0, dir) -- Volume -
-    end
-
-    if (button == 111) then
-        print("Mute")
-        lmc_send_input(0xAD, 0, dir) -- Mute
-    end
-
-    if (button == 104) then
-        print("Prev Track")
-        lmc_send_input(0xB1, 0, dir) -- Prev Track
-    end
-
-    if (button == 105) then
-        print("Play / Pause")
-        lmc_send_input(0xB3, 0, dir) -- Play / Pause
-    end
-
-    if (button == 103) then
-        print("Stop")
-        lmc_send_input(0xB2, 0, dir) -- Stop
-    end
-
-    if (button == 109) then
-        print("Next Track")
-        lmc_send_input(0xB0, 0, dir) -- Next Track
-    end
+    lmc_send_input(mapped_input, 0, dir)
 end
 
 debug_chrome = function (button, direction)
