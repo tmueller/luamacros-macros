@@ -26,6 +26,10 @@ lmc_set_handler('NUM', function(button, direction)
     windows_keys(button, direction)
 end)
 
+input_direction = function (direction)
+    return direction == 0 and 2 or 0;
+end
+
 windows_keys = function (button, direction)
     if (direction == 1) then
         return
@@ -39,6 +43,11 @@ windows_keys = function (button, direction)
     if (button == 9) then
         print("Desktop Left")
         lmc_send_keys("^#{LEFT}");
+    end
+
+    if (button == 13) then
+        print("Powershell")
+        lmc_spawn("powershell")
     end
 end
 
@@ -120,10 +129,6 @@ debug_vscode = function (button, direction)
         print("Step Out")
         lmc_send_keys("+{F11}")
     end
-end
-
-input_direction = function (direction)
-    return direction == 0 and 2 or 0;
 end
 
 -- Shift+a you write '+a'
