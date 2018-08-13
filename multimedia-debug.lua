@@ -105,6 +105,12 @@ debug_chrome = function (button, direction)
         print("Reload")
         lmc_send_keys("^{F5}")
     end
+
+    -- Stop
+    if (button == 97) then
+        print("Stop")
+        lmc_send_keys("{F12}")
+    end
 end
 
 debug_vscode = function (button, direction)
@@ -140,6 +146,12 @@ debug_vscode = function (button, direction)
     if (button == 98) then
         print("Reload")
         lmc_send_keys("^+{F5}")
+    end
+
+    -- Stop
+    if (button == 97) then
+        print("Stop")
+        lmc_send_keys("+{F5}")
     end
 end
 
