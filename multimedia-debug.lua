@@ -7,29 +7,28 @@ lmc_device_set_name('CORSAIR', 'VID_1B1')
 -- end
 
 lmc_set_handler('NUM', function(button, direction)
-    print("button: " .. button .. " direction: " .. direction)
+    debug_output(button, direction)
 
-    -- MEDIA ------------------------------------------------------------------
     media_controls(button, direction)
-
-    -- DEBUG ------------------------------------------------------------------
-    title=lmc_get_window_title()
-    print(title)
-
-    if (string.match(title, "Chrome")) then
-        debug_chrome(button, direction)
-    elseif (string.match(title, "Visual Studio Code")) then
-        debug_vscode(button, direction)
-    end
-
-    -- Windows ----------------------------------------------------------------
+    debuggers(button, direction)
     windows_keys(button, direction)
 end)
 
+-- Utils ----------------------------------------------------------------------
 input_direction = function (direction)
     return direction == 0 and 2 or 0;
 end
 
+debug_output = function (button, direction)
+    title = lmc_get_window_title()
+    print(
+        "Button: " .. button ..
+        " | Direction: " .. direction ..
+        " | Title: " .. title
+    )
+end
+
+-- Windows Keys ---------------------------------------------------------------
 windows_keys = function (button, direction)
     if (direction == 1) then
         return
@@ -51,108 +50,110 @@ windows_keys = function (button, direction)
     end
 end
 
-media_map = {};
-media_map[8] = 0xAF     -- backspace    => Volume +
-media_map[106] = 0xAE   -- *            => Volume -
-media_map[111] = 0xAD   -- /            => Mute
-media_map[104] = 0xB1   -- 8            => Prev Track
-media_map[105] = 0xB3   -- 9            => Play / Pause
-media_map[103] = 0xB2   -- 7            => Stop
-media_map[109] = 0xB0   -- -            => Next Track
+-- Media Keys -----------------------------------------------------------------
+media_map = {
+    [8] = 0xAF,     -- backspace    => Volume +
+    [106] = 0xAE,   -- *            => Volume -
+    [111] = 0xAD,   -- /            => Mute
+    [104] = 0xB1,   -- 8            => Prev Track
+    [105] = 0xB3,   -- 9            => Play / Pause
+    [103] = 0xB2,   -- 7            => Stop
+    [109] = 0xB0,   -- -            => Next Track
+};
 
 media_controls = function (button, direction)
-    dir = input_direction(direction)
     mapped_input = media_map[button]
 
     if (not mapped_input) then
         return
     end
 
-    lmc_send_input(mapped_input, 0, dir)
+    lmc_send_input(mapped_input, 0, input_direction(direction))
 end
 
-debug_chrome = function (button, direction)
-    if (direction == 1) then
-        return
-    end
+-- Debugging ------------------------------------------------------------------
+debug_action_map = {
+    [100] = "Continue",
+    [101] = "Step Over",
+    [102] = "Step Into",
+    [107] = "Step Out",
+    [98] = "Reload",
+    [97] = "Stop",
+}
 
-    -- Continue
-    if (button == 100) then
-        print("Continue")
-        lmc_send_keys("{F8}")
-    end
+make_debug_function = function(window_title, debug_map)
+    return function (button, direction)
+        if (direction == 1) then
+            return
+        end
 
-    -- Step Over
-    if (button == 101) then
-        print("Step Over")
-        lmc_send_keys("{F10}")
-    end
+        title = lmc_get_window_title()
+        if (not string.match(title, window_title)) then
+            return
+        end
 
-    -- Step Into
-    if (button == 102) then
-        print("Step Into")
-        lmc_send_keys("{F11}")
-    end
+        action = debug_action_map[button]
 
-    -- Step Out
-    if (button == 107) then
-        print("Step Out")
-        lmc_send_keys("+{F11}")
-    end
+        if (not action) then
+            return
+        end
 
-    -- Reload
-    if (button == 98) then
-        print("Reload")
-        lmc_send_keys("^{F5}")
-    end
+        print("Debug: " .. action);
 
-    -- Stop
-    if (button == 97) then
-        print("Stop")
-        lmc_send_keys("{F12}")
+        keys = debug_map[action]
+
+        if (not keys) then
+            print(
+                "Debug action '" .. action ..
+                "' not supported for " .. window_title
+            )
+            return
+        end
+
+        lmc_send_keys(keys)
     end
 end
 
-debug_vscode = function (button, direction)
-    if (direction == 1) then
-        return
-    end
+debug_chrome = make_debug_function(
+    "Chrome",
+    {
+        ["Continue"] = "{F8}",
+        ["Step Over"] = "{F10}",
+        ["Step Into"] = "{F11}",
+        ["Step Out"] = "+{F11}",
+        ["Reload"] = "^{F5}",
+        ["Stop"] = "{F12}",
+    }
+)
 
-    -- Continue
-    if (button == 100) then
-        print("Continue")
-        lmc_send_keys("{F5}")
-    end
+debug_vscode = make_debug_function(
+    "Visual Studio Code",
+    {
+        ["Continue"] = "{F5}",
+        ["Step Over"] = "{F10}",
+        ["Step Into"] = "{F11}",
+        ["Step Out"] = "+{F11}",
+        ["Reload"] = "^+{F5}",
+        ["Stop"] = "+{F5}",
+    }
+)
 
-    -- Step Over
-    if (button == 101) then
-        print("Step Over")
-        lmc_send_keys("{F10}")
-    end
+debug_firefox = make_debug_function(
+    "Firefox",
+    {
+        ["Continue"] = "{F8}",
+        ["Step Over"] = "{F10}",
+        ["Step Into"] = "{F11}",
+        ["Step Out"] = "+{F11}",
+        ["Reload"] = "^{F5}",
+        ["Stop"] = "{F12}",
+    }
+)
 
-    -- Step Into
-    if (button == 102) then
-        print("Step Into")
-        lmc_send_keys("{F11}")
-    end
-
-    -- Step Out
-    if (button == 107) then
-        print("Step Out")
-        lmc_send_keys("+{F11}")
-    end
-
-    -- Reload
-    if (button == 98) then
-        print("Reload")
-        lmc_send_keys("^+{F5}")
-    end
-
-    -- Stop
-    if (button == 97) then
-        print("Stop")
-        lmc_send_keys("+{F5}")
-    end
+debuggers = function (button, direction)
+    debug_chrome(button, direction)
+    debug_vscode(button, direction)
+    debug_firefox(button, direction)
 end
 
 -- Shift+a you write '+a'
