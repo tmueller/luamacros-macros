@@ -51,24 +51,86 @@ windows_keys = function (button, direction)
 end
 
 -- Media Keys -----------------------------------------------------------------
-media_map = {
-    [8] = 0xAF,     -- backspace    => Volume +
-    [106] = 0xAE,   -- *            => Volume -
-    [111] = 0xAD,   -- /            => Mute
-    [104] = 0xB1,   -- 8            => Prev Track
-    [105] = 0xB3,   -- 9            => Play / Pause
-    [103] = 0xB2,   -- 7            => Stop
-    [109] = 0xB0,   -- -            => Next Track
-};
+media_action_map = {
+    [8] = "VolumeUp",
+    [106] = "VolumeDown",
+    [111] = "Mute",
+    [104] = "PrevTrack",
+    [103] = "Stop",
+    [105] = "PlayPause",
+    [109] = "NextTrack",
+}
+
+make_media_function = function(window_title, media_map)
+    return function (button)
+        local title = lmc_get_window_title()
+        if (not string.match(title, window_title)) then
+            return
+        end
+
+        local action = media_action_map[button]
+
+        if (not action) then
+            return
+        end
+
+        local key = media_map[action]
+        local key_type = type(key)
+
+        if (key) then
+            print("Media: found '" .. action .. "' for '" .. window_title .. "'");
+        end
+
+        if (key_type == "number") then
+            return function (direction)
+                lmc_send_input(key, 0, input_direction(direction))
+            end
+        elseif (key_type == "string") then
+            return function (direction)
+                if (direction == 1) then
+                    return
+                end
+
+                lmc_send_keys(key)
+            end
+        end
+    end
+end
+
+global_media_control = make_media_function(
+    ".*",
+    {
+        VolumeUp = 0xAF,
+        VolumeDown = 0xAE,
+        Mute = 0xAD,
+        PrevTrack = 0xB1,
+        Stop = 0xB2,
+        PlayPause = 0xB3,
+        NextTrack = 0xB0,
+    }
+)
+
+youtube_media_control = make_media_function(
+    "YouTube",
+    {
+        PrevTrack = "%{LEFT}",
+        PlayPause = "k",
+        NextTrack = "N",
+    }
+)
 
 media_controls = function (button, direction)
-    mapped_input = media_map[button]
+    local mapped_input = youtube_media_control(button)
+
+    if (not mapped_input) then
+        mapped_input = global_media_control(button)
+    end
 
     if (not mapped_input) then
         return
     end
 
-    lmc_send_input(mapped_input, 0, input_direction(direction))
+    mapped_input(direction)
 end
 
 -- Debugging ------------------------------------------------------------------
@@ -87,12 +149,12 @@ make_debug_function = function(window_title, debug_map)
             return
         end
 
-        title = lmc_get_window_title()
+        local title = lmc_get_window_title()
         if (not string.match(title, window_title)) then
             return
         end
 
-        action = debug_action_map[button]
+        local action = debug_action_map[button]
 
         if (not action) then
             return
@@ -100,7 +162,7 @@ make_debug_function = function(window_title, debug_map)
 
         print("Debug: " .. action);
 
-        keys = debug_map[action]
+        local keys = debug_map[action]
 
         if (not keys) then
             print(
