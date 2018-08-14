@@ -74,9 +74,9 @@ end
 -- Debugging ------------------------------------------------------------------
 debug_action_map = {
     [100] = "Continue",
-    [101] = "Step Over",
-    [102] = "Step Into",
-    [107] = "Step Out",
+    [101] = "StepOver",
+    [102] = "StepInto",
+    [107] = "StepOut",
     [98] = "Reload",
     [97] = "Stop",
 }
@@ -117,36 +117,36 @@ end
 debug_chrome = make_debug_function(
     "Chrome",
     {
-        ["Continue"] = "{F8}",
-        ["Step Over"] = "{F10}",
-        ["Step Into"] = "{F11}",
-        ["Step Out"] = "+{F11}",
-        ["Reload"] = "^{F5}",
-        ["Stop"] = "{F12}",
+        Continue = "{F8}",
+        StepOver = "{F10}",
+        StepInto = "{F11}",
+        StepOut = "+{F11}",
+        Reload = "^{F5}",
+        Stop = "{F12}",
     }
 )
 
 debug_vscode = make_debug_function(
     "Visual Studio Code",
     {
-        ["Continue"] = "{F5}",
-        ["Step Over"] = "{F10}",
-        ["Step Into"] = "{F11}",
-        ["Step Out"] = "+{F11}",
-        ["Reload"] = "^+{F5}",
-        ["Stop"] = "+{F5}",
+        Continue = "{F5}",
+        StepOver = "{F10}",
+        StepInto = "{F11}",
+        StepOut = "+{F11}",
+        Reload = "^+{F5}",
+        Stop = "+{F5}",
     }
 )
 
 debug_firefox = make_debug_function(
     "Firefox",
     {
-        ["Continue"] = "{F8}",
-        ["Step Over"] = "{F10}",
-        ["Step Into"] = "{F11}",
-        ["Step Out"] = "+{F11}",
-        ["Reload"] = "^{F5}",
-        ["Stop"] = "{F12}",
+        Continue = "{F8}",
+        StepOver = "{F10}",
+        StepInto = "{F11}",
+        StepOut = "+{F11}",
+        Reload = "^{F5}",
+        Stop = "{F12}",
     }
 )
 
