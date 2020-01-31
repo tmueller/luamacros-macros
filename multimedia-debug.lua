@@ -189,6 +189,18 @@ debug_chrome = make_debug_function(
     }
 )
 
+debug_chromium = make_debug_function(
+    "Chromium",
+    {
+        Continue = "{F8}",
+        StepOver = "{F10}",
+        StepInto = "{F11}",
+        StepOut = "+{F11}",
+        Reload = "^{F5}",
+        Stop = "{F12}",
+    }
+)
+
 debug_vscode = make_debug_function(
     "Visual Studio Code",
     {
@@ -215,6 +227,7 @@ debug_firefox = make_debug_function(
 
 debuggers = function (button, direction)
     debug_chrome(button, direction)
+    debug_chromium(button, direction)
     debug_vscode(button, direction)
     debug_firefox(button, direction)
 end
