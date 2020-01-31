@@ -1,10 +1,11 @@
 clear()
 lmc_device_set_name('NUM', 'VID_062A')
 lmc_device_set_name('CORSAIR', 'VID_1B1')
+lmc_device_set_name('G613', 'VID_046');
 
--- log_handler = function(button, direction, ts)
---   print('Callback for device: button ' .. button .. ', direction '..direction..', ts '..ts)
--- end
+log_handler = function(button, direction, ts, flags)
+  print('Callback for device: button ' .. button .. ', direction '..direction..', ts '..ts..', flags '..flags)
+end
 
 lmc_set_handler('NUM', function(button, direction)
     debug_output(button, direction)
