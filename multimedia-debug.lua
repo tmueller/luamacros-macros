@@ -120,8 +120,21 @@ youtube_media_control = make_media_function(
     }
 )
 
+
+teams_media_control = make_media_function(
+    "Microsoft Teams",
+    {
+        Mute = "^+M",
+        Stop = "^+B",
+    }
+)
+
 media_controls = function (button, direction)
     local mapped_input = youtube_media_control(button)
+
+    if (not mapped_input) then
+        mapped_input = teams_media_control(button)
+    end
 
     if (not mapped_input) then
         mapped_input = global_media_control(button)
